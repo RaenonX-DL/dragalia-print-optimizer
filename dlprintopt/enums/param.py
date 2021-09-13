@@ -11,6 +11,8 @@ class StatusParameter(Enum):
     CRT_RATE = auto()
     CRT_DAMAGE = auto()
     PUNISHER = auto()
+    PUNISHER_BK = auto()
+    ENMITY = auto()
 
 
 def get_status_base_rates(additional_rates: dict[StatusParameter, float]) -> dict[StatusParameter, float]:
@@ -22,6 +24,8 @@ def get_status_base_rates(additional_rates: dict[StatusParameter, float]) -> dic
         # Base included when calculating effectiveness
         StatusParameter.CRT_DAMAGE: 0,
         StatusParameter.PUNISHER: 1,
+        StatusParameter.PUNISHER_BK: 1,
+        StatusParameter.ENMITY: 1,
     }
     for param, rate in additional_rates.items():
         ret[param] += rate
@@ -39,6 +43,8 @@ class PrintParameter(Enum):
     CRT_DAMAGE = auto()
     PUNISHER_POISON = auto()
     PUNISHER_STORMLASH = auto()
+    PUNISHER_BK = auto()
+    ENMITY = auto()
 
     @property
     def max_value(self) -> Optional[float]:
@@ -59,6 +65,8 @@ _print_param_to_status: dict[PrintParameter, StatusParameter] = {
     PrintParameter.CRT_DAMAGE: StatusParameter.CRT_DAMAGE,
     PrintParameter.PUNISHER_POISON: StatusParameter.PUNISHER,
     PrintParameter.PUNISHER_STORMLASH: StatusParameter.PUNISHER,
+    PrintParameter.PUNISHER_BK: StatusParameter.PUNISHER_BK,
+    PrintParameter.ENMITY: StatusParameter.ENMITY,
 }
 
 _print_param_max_val: dict[PrintParameter, Optional[float]] = {
@@ -71,4 +79,6 @@ _print_param_max_val: dict[PrintParameter, Optional[float]] = {
     PrintParameter.CRT_DAMAGE: 0.25,
     PrintParameter.PUNISHER_POISON: 0.3,
     PrintParameter.PUNISHER_STORMLASH: 0.25,
+    PrintParameter.PUNISHER_BK: 0.3,
+    PrintParameter.ENMITY: 0.6,
 }
