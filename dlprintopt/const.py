@@ -1,3 +1,4 @@
-__all__ = ("CDMG_RATE",)
+__all__ = ("CDMG_RATE", "DDMG_RATE")
 
 CDMG_RATE = 1.7
+DDMG_RATE = 1.7

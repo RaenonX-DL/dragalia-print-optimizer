@@ -1,6 +1,10 @@
 from enum import Enum, auto
 from typing import Optional
 
+from dlprintopt.const import DDMG_RATE
+
+from .damagetype import DamageType
+
 __all__ = ("StatusParameter", "get_status_base_rates", "PrintParameter",)
 
 
@@ -13,6 +17,11 @@ class StatusParameter(Enum):
     PUNISHER = auto()
     PUNISHER_BK = auto()
     ENMITY = auto()
+    DRAGON_DAMAGE = auto()
+
+    @property
+    def applicable_damage_types(self) -> set[DamageType]:
+        return _status_applicable_damage_type.get(self, set(DamageType)) or set(DamageType)
 
 
 def get_status_base_rates(additional_rates: dict[StatusParameter, float]) -> dict[StatusParameter, float]:
@@ -26,6 +35,7 @@ def get_status_base_rates(additional_rates: dict[StatusParameter, float]) -> dic
         StatusParameter.PUNISHER: 1,
         StatusParameter.PUNISHER_BK: 1,
         StatusParameter.ENMITY: 1,
+        StatusParameter.DRAGON_DAMAGE: DDMG_RATE,
     }
     for param, rate in additional_rates.items():
         ret[param] += rate
@@ -42,9 +52,12 @@ class PrintParameter(Enum):
     CRT_RATE = auto()
     CRT_DAMAGE = auto()
     PUNISHER_POISON = auto()
+    PUNISHER_BURN = auto()
     PUNISHER_STORMLASH = auto()
+    PUNISHER_SCORCHREND = auto()
     PUNISHER_BK = auto()
     ENMITY = auto()
+    DRAGON_DAMAGE = auto()
 
     @property
     def max_value(self) -> Optional[float]:
@@ -64,9 +77,12 @@ _print_param_to_status: dict[PrintParameter, StatusParameter] = {
     PrintParameter.CRT_RATE: StatusParameter.CRT_RATE,
     PrintParameter.CRT_DAMAGE: StatusParameter.CRT_DAMAGE,
     PrintParameter.PUNISHER_POISON: StatusParameter.PUNISHER,
+    PrintParameter.PUNISHER_BURN: StatusParameter.PUNISHER,
     PrintParameter.PUNISHER_STORMLASH: StatusParameter.PUNISHER,
+    PrintParameter.PUNISHER_SCORCHREND: StatusParameter.PUNISHER,
     PrintParameter.PUNISHER_BK: StatusParameter.PUNISHER_BK,
     PrintParameter.ENMITY: StatusParameter.ENMITY,
+    PrintParameter.DRAGON_DAMAGE: StatusParameter.DRAGON_DAMAGE,
 }
 
 _print_param_max_val: dict[PrintParameter, Optional[float]] = {
@@ -78,7 +94,22 @@ _print_param_max_val: dict[PrintParameter, Optional[float]] = {
     PrintParameter.CRT_RATE: 0.15,
     PrintParameter.CRT_DAMAGE: 0.25,
     PrintParameter.PUNISHER_POISON: 0.3,
+    PrintParameter.PUNISHER_BURN: 0.3,
     PrintParameter.PUNISHER_STORMLASH: 0.25,
+    PrintParameter.PUNISHER_SCORCHREND: 0.25,
     PrintParameter.PUNISHER_BK: 0.3,
     PrintParameter.ENMITY: 0.6,
+    PrintParameter.DRAGON_DAMAGE: 0.18,
+}
+
+_status_applicable_damage_type: dict[StatusParameter, Optional[set[DamageType]]] = {
+    StatusParameter.ATK_PASSIVE: None,
+    StatusParameter.FS_DMG: {DamageType.FS},
+    StatusParameter.SKILL_DMG: {DamageType.SKILL},
+    StatusParameter.CRT_RATE: None,
+    StatusParameter.CRT_DAMAGE: None,
+    StatusParameter.PUNISHER: None,
+    StatusParameter.PUNISHER_BK: None,
+    StatusParameter.ENMITY: None,
+    StatusParameter.DRAGON_DAMAGE: {DamageType.DRAGON}
 }
