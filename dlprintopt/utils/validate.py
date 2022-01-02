@@ -1,3 +1,4 @@
+from collections import Counter
 from typing import TYPE_CHECKING
 
 from dlprintopt.enums import PrintType
@@ -9,8 +10,10 @@ __all__ = ("is_prints_valid",)
 
 
 def is_prints_valid(prints: list["Wyrmprint"]) -> bool:
-    r5_count = len([wp for wp in prints if wp.type == PrintType.R5])
-    r4_count = len([wp for wp in prints if wp.type == PrintType.R4])
-    sindom_count = len([wp for wp in prints if wp.type == PrintType.SINDOM])
+    type_counter = Counter(map(lambda wp: wp.type, prints))
 
-    return r5_count <= 3 and r4_count <= 2 and sindom_count <= 2
+    for print_type in PrintType:
+        if type_counter[print_type] > print_type.max_count:
+            return False
+
+    return True
