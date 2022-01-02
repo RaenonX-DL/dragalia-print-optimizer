@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from dlprintopt.enums import Affinity, PrintParameter, PrintType
+from dlprintopt.enums import Affinity, PrintType
+from .effect import Effect
 
 __all__ = ("Wyrmprint",)
 
@@ -12,8 +13,6 @@ class Wyrmprint:
 
     type: PrintType
 
-    effect_param: Optional[PrintParameter] = None
-    effect_rate: Optional[float] = None
+    effects: list[Effect]
 
     affinity_type: Optional[Affinity] = None
-    enables_affinity: Optional[Affinity] = None

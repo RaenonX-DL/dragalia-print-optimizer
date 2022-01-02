@@ -57,6 +57,7 @@ class PrintParameter(Enum):
     PUNISHER_BURN = auto()
     PUNISHER_STORMLASH = auto()
     PUNISHER_SCORCHREND = auto()
+    PUNISHER_SHADOWBLIGHT = auto()
     PUNISHER_BK = auto()
     ENMITY = auto()
     DRAGON_DAMAGE = auto()
@@ -82,6 +83,7 @@ _print_param_to_status: dict[PrintParameter, StatusParameter] = {
     PrintParameter.PUNISHER_BURN: StatusParameter.PUNISHER,
     PrintParameter.PUNISHER_STORMLASH: StatusParameter.PUNISHER,
     PrintParameter.PUNISHER_SCORCHREND: StatusParameter.PUNISHER,
+    PrintParameter.PUNISHER_SHADOWBLIGHT: StatusParameter.PUNISHER,
     PrintParameter.PUNISHER_BK: StatusParameter.PUNISHER_BK,
     PrintParameter.ENMITY: StatusParameter.ENMITY,
     PrintParameter.DRAGON_DAMAGE: StatusParameter.DRAGON_DAMAGE,
@@ -99,6 +101,7 @@ _print_param_max_val: dict[PrintParameter, Optional[float]] = {
     PrintParameter.PUNISHER_BURN: 0.3,
     PrintParameter.PUNISHER_STORMLASH: 0.25,
     PrintParameter.PUNISHER_SCORCHREND: 0.25,
+    PrintParameter.PUNISHER_SHADOWBLIGHT: 0.25,
     PrintParameter.PUNISHER_BK: 0.3,
     PrintParameter.ENMITY: 0.6,
     PrintParameter.DRAGON_DAMAGE: 0.18,

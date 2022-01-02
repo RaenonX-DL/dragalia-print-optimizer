@@ -13,7 +13,7 @@ def get_print_effectiveness(prints: list["Wyrmprint"]) -> dict[PrintParameter, f
     rates: dict[PrintParameter, float] = {}
     has_affinity_enabled: dict[Affinity, bool] = {
         affinity: (
-                any(wp for wp in prints if wp.enables_affinity == affinity)
+                any(wp for wp in prints if any(effect.enables_affinity == affinity for effect in wp.effects))
                 and any(wp for wp in prints if wp.affinity_type == affinity)
         )
         for affinity in Affinity
@@ -22,18 +22,19 @@ def get_print_effectiveness(prints: list["Wyrmprint"]) -> dict[PrintParameter, f
 
     # Add print effects
     for wp in prints:
-        param = wp.effect_param
+        for effect in wp.effects:
+            param = effect.effect_param
 
-        # Print may not have any effect on stats
-        if param is None:
-            continue
+            # Print may not have any effect on stats
+            if param is None:
+                continue
 
-        rate = wp.effect_rate
+            rate = effect.effect_rate
 
-        if param not in rates:
-            rates[param] = rate
-        else:
-            rates[param] += rate
+            if param not in rates:
+                rates[param] = rate
+            else:
+                rates[param] += rate
 
     # Add affinity effects (by count)
     for affinity, count in affinity_counter.items():
