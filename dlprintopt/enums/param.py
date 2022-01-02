@@ -10,6 +10,7 @@ __all__ = ("StatusParameter", "get_status_base_rates", "PrintParameter",)
 
 class StatusParameter(Enum):
     ATK_PASSIVE = auto()
+    ELEMENTAL = auto()
     FS_DMG = auto()
     SKILL_DMG = auto()
     CRT_RATE = auto()
@@ -27,6 +28,7 @@ class StatusParameter(Enum):
 def get_status_base_rates(additional_rates: dict[StatusParameter, float]) -> dict[StatusParameter, float]:
     ret: dict[StatusParameter, float] = {
         StatusParameter.ATK_PASSIVE: 1,
+        StatusParameter.ELEMENTAL: 1.5,
         StatusParameter.FS_DMG: 1,
         StatusParameter.SKILL_DMG: 1,
         StatusParameter.CRT_RATE: 0.02,
@@ -104,12 +106,13 @@ _print_param_max_val: dict[PrintParameter, Optional[float]] = {
 
 _status_applicable_damage_type: dict[StatusParameter, Optional[set[DamageType]]] = {
     StatusParameter.ATK_PASSIVE: None,
+    StatusParameter.ELEMENTAL: None,
     StatusParameter.FS_DMG: {DamageType.FS},
-    StatusParameter.SKILL_DMG: {DamageType.SKILL},
+    StatusParameter.SKILL_DMG: {DamageType.SKILL, DamageType.DRAGON_SKILL},
     StatusParameter.CRT_RATE: None,
     StatusParameter.CRT_DAMAGE: None,
     StatusParameter.PUNISHER: None,
     StatusParameter.PUNISHER_BK: None,
     StatusParameter.ENMITY: None,
-    StatusParameter.DRAGON_DAMAGE: {DamageType.DRAGON}
+    StatusParameter.DRAGON_DAMAGE: {DamageType.DRAGON, DamageType.DRAGON_SKILL}
 }
