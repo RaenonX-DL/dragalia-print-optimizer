@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 from dlprintopt.enums import PrintParameter, get_status_base_rates, StatusParameter, DamageType
 from dlprintopt.utils import is_prints_valid, get_print_effectiveness, multiply_items
 
+from .calcparams import CalcParams
 from .effectiveness import Effectiveness
 from .wp import Wyrmprint
 
@@ -21,15 +22,11 @@ class PrintComp:
 
         self.print_effects = get_print_effectiveness(self.prints)
 
-    def get_prints_effectiveness(
-            self,
-            additional_base: dict[StatusParameter, float],
-            damage_distribution: dict[DamageType, float]
-    ) -> Effectiveness:
+    def get_prints_effectiveness(self, params: CalcParams) -> Effectiveness:
         effectivenesses: list[Effectiveness] = []
 
-        for damage_type, distribution_ratio in damage_distribution.items():
-            rates: dict[StatusParameter, float] = get_status_base_rates(additional_base)
+        for damage_type, distribution_ratio in params.damage_distribution.items():
+            rates: dict[StatusParameter, float] = get_status_base_rates(params.additional_base)
 
             for param, rate in self.print_effects.items():
                 rates[param.to_status] += rate
@@ -50,15 +47,13 @@ class PrintComp:
 
         return sum(effectivenesses, start=Effectiveness(base=0, crt_rate=0, cdmg_boost_rate=0))
 
-    def report_effectiveness(
-            self,
-            additional_base: dict[StatusParameter, float],
-            damage_distribution: dict[DamageType, float]
-    ):
+    def report_effectiveness(self, params: CalcParams):
         wp_names = " / ".join(wp.name for wp in self.prints)
         wp_effects = " / ".join(f"{param.name}: {rate}" for param, rate in self.print_effects.items())
 
-        print(f"Prints: {wp_names}\n"
-              f"Effects: {wp_effects}\n"
-              f"Effectiveness: "
-              f"{self.get_prints_effectiveness(additional_base, damage_distribution).rate_incl_crt:.5f}")
+        print(
+            f"Prints: {wp_names}\n"
+            f"Effects: {wp_effects}\n"
+            f"Effectiveness: "
+            f"{self.get_prints_effectiveness(params).rate_incl_crt:.5f}"
+        )

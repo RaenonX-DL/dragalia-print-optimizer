@@ -1,7 +1,7 @@
 from itertools import product, combinations
 
-from dlprintopt.enums import PrintType, PrintParameter, StatusParameter, DamageType, Affinity
-from dlprintopt.model import Wyrmprint, PrintComp, Effect
+from dlprintopt.enums import PrintType, PrintParameter, StatusParameter, DamageType, Affinity, DamageOnStatus
+from dlprintopt.model import CalcParams, Wyrmprint, PrintComp, Effect
 
 prints_r5: dict[str, Wyrmprint] = {
     "ATK_20": Wyrmprint(
@@ -106,13 +106,13 @@ prints_kaleido: dict[str, Wyrmprint] = {
             Effect(effect_param=PrintParameter.CRT_DAMAGE, effect_rate=0.15),
         ],
     ),
-    "KLD_CRT_ATK": Wyrmprint(
-        name="KLD_CRT_ATK", type=PrintType.KALEIDO,
-        effects=[
-            Effect(effect_param=PrintParameter.CRT_RATE, effect_rate=0.15),
-            Effect(effect_param=PrintParameter.ATK_PASSIVE_PRINT, effect_rate=0.2),
-        ],
-    ),
+    # "KLD_CRT_ATK": Wyrmprint(
+    #     name="KLD_CRT_ATK", type=PrintType.KALEIDO,
+    #     effects=[
+    #         Effect(effect_param=PrintParameter.CRT_RATE, effect_rate=0.15),
+    #         Effect(effect_param=PrintParameter.ATK_PASSIVE_PRINT, effect_rate=0.2),
+    #     ],
+    # ),
     "KLD_DDMG_CDMG": Wyrmprint(
         name="KLD_DDMG_CDMG", type=PrintType.KALEIDO,
         effects=[
@@ -131,7 +131,7 @@ prints_kaleido: dict[str, Wyrmprint] = {
 
 additional_base: dict[StatusParameter, float] = {
     StatusParameter.ATK_PASSIVE: 1.2 + 0.1,
-    StatusParameter.SKILL_DMG: 0.4 + 0.4,
+    StatusParameter.SKILL_DMG: 0.4,
     StatusParameter.CRT_RATE: 0.02
 }
 
@@ -142,6 +142,18 @@ damage_distribution: dict[DamageType, float] = {
     DamageType.DRAGON: 0.1209,
     DamageType.DRAGON_SKILL: 0.06619,
 }
+
+damage_status_distribution: dict[DamageOnStatus, float] = {
+    DamageOnStatus.PRE_OD: 0,
+    DamageOnStatus.OD: 0.5,
+    DamageOnStatus.BK: 0.5
+}
+
+params: CalcParams = CalcParams(
+    additional_base=additional_base,
+    damage_distribution=damage_distribution,
+    damage_status_distribution=damage_status_distribution,
+)
 
 
 def check_all_count():
@@ -160,7 +172,7 @@ def check_all_count():
             comps,
             key=lambda comp: comp.get_prints_effectiveness(additional_base, damage_distribution)
         )
-        most_effective.report_effectiveness(additional_base, damage_distribution)
+        most_effective.report_effectiveness(params)
         print()
 
 
@@ -168,6 +180,8 @@ def check_partial_count():
     # R5 / R4 / KLD / SINDOM
     counts: list[tuple[int, int, int, int]] = [
         (3, 2, 1, 2),
+        (2, 2, 1, 2),
+        (3, 1, 1, 2),
     ]
 
     for r5_count, r4_count, kld_count, sindom_count in counts:
@@ -185,9 +199,9 @@ def check_partial_count():
 
         most_effective = max(
             comps,
-            key=lambda comp: comp.get_prints_effectiveness(additional_base, damage_distribution)
+            key=lambda comp: comp.get_prints_effectiveness(params)
         )
-        most_effective.report_effectiveness(additional_base, damage_distribution)
+        most_effective.report_effectiveness(params)
         print()
 
 
@@ -207,21 +221,12 @@ def check_full():
 
     for comp in sorted(
             comps,
-            key=lambda comp: comp.get_prints_effectiveness(additional_base, damage_distribution),
+            key=lambda comp: comp.get_prints_effectiveness(params),
             reverse=True
     ):
-        comp.report_effectiveness(additional_base, damage_distribution)
+        comp.report_effectiveness(params)
         print()
 
 
 if __name__ == '__main__':
-    # PrintComp(prints=[
-    #     prints_r5["ATK_20"],
-    #     prints_r5["SD_40"],
-    #     prints_r5["DDMG"],
-    #     prints_r4["SD_20"],
-    #     prints_r4["SD_20_2"],
-    #     prints_sindom["SINDOM_SD_20"],
-    #     prints_sindom["SINDOM_SD_20_2"]
-    # ]).get_prints_effectiveness(additional_base, damage_distribution)
     check_partial_count()
