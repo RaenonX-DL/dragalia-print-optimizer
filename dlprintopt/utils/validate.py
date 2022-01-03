@@ -1,5 +1,5 @@
 from collections import Counter
-from typing import TYPE_CHECKING
+from typing import Sequence, TYPE_CHECKING
 
 from dlprintopt.enums import PrintType
 
@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 __all__ = ("is_prints_valid",)
 
 
-def is_prints_valid(prints: list["Wyrmprint"]) -> bool:
+def is_prints_valid(prints: Sequence["Wyrmprint"]) -> bool:
     type_counter = Counter(map(lambda wp: wp.type, prints))
 
     for print_type in PrintType:

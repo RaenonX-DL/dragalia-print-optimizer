@@ -3,6 +3,7 @@ from typing import Optional
 
 from dlprintopt.const import DDMG_RATE
 
+from .damageonstatus import DamageOnStatus
 from .damagetype import DamageType
 
 __all__ = ("StatusParameter", "get_status_base_rates", "PrintParameter",)
@@ -24,6 +25,10 @@ class StatusParameter(Enum):
     def applicable_damage_types(self) -> set[DamageType]:
         return _status_applicable_damage_type.get(self, set(DamageType)) or set(DamageType)
 
+    @property
+    def applicable_damage_on_status(self) -> set[DamageOnStatus]:
+        return _status_applicable_damage_on_status.get(self, set(DamageOnStatus)) or set(DamageOnStatus)
+
 
 def get_status_base_rates(additional_rates: dict[StatusParameter, float]) -> dict[StatusParameter, float]:
     ret: dict[StatusParameter, float] = {
@@ -31,7 +36,7 @@ def get_status_base_rates(additional_rates: dict[StatusParameter, float]) -> dic
         StatusParameter.ELEMENTAL: 1.5,
         StatusParameter.FS_DMG: 1,
         StatusParameter.SKILL_DMG: 1,
-        StatusParameter.CRT_RATE: 0.02,
+        StatusParameter.CRT_RATE: 0,
         # Base included when calculating effectiveness
         StatusParameter.CRT_DAMAGE: 0,
         StatusParameter.PUNISHER: 1,
@@ -118,4 +123,17 @@ _status_applicable_damage_type: dict[StatusParameter, Optional[set[DamageType]]]
     StatusParameter.PUNISHER_BK: None,
     StatusParameter.ENMITY: None,
     StatusParameter.DRAGON_DAMAGE: {DamageType.DRAGON, DamageType.DRAGON_SKILL}
+}
+
+_status_applicable_damage_on_status: dict[StatusParameter, Optional[set[DamageOnStatus]]] = {
+    StatusParameter.ATK_PASSIVE: None,
+    StatusParameter.ELEMENTAL: None,
+    StatusParameter.FS_DMG: None,
+    StatusParameter.SKILL_DMG: None,
+    StatusParameter.CRT_RATE: None,
+    StatusParameter.CRT_DAMAGE: None,
+    StatusParameter.PUNISHER: None,
+    StatusParameter.PUNISHER_BK: {DamageOnStatus.BK},
+    StatusParameter.ENMITY: None,
+    StatusParameter.DRAGON_DAMAGE: None
 }

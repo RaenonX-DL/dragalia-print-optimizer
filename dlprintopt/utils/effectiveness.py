@@ -1,5 +1,5 @@
 from collections import Counter
-from typing import TYPE_CHECKING
+from typing import Sequence, TYPE_CHECKING
 
 from dlprintopt.const import CDMG_RATE
 from dlprintopt.enums import Affinity, PrintParameter
@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 __all__ = ("get_print_effectiveness", "get_expected_crt_effectiveness")
 
 
-def get_print_effectiveness(prints: list["Wyrmprint"]) -> dict[PrintParameter, float]:
+def get_print_effectiveness(prints: Sequence["Wyrmprint"]) -> dict[PrintParameter, float]:
     rates: dict[PrintParameter, float] = {}
     has_affinity_enabled: dict[Affinity, bool] = {
         affinity: (

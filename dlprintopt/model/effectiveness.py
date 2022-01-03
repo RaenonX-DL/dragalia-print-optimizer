@@ -36,6 +36,9 @@ class Effectiveness:
     def __gt__(self, other: "Effectiveness"):
         return self.rate_incl_crt > other.rate_incl_crt
 
+    def __lt__(self, other: "Effectiveness"):
+        return self.rate_incl_crt < other.rate_incl_crt
+
     def __add__(self, other: "Effectiveness"):
         return Effectiveness(
             rate_no_crt=self.rate_no_crt + other.rate_no_crt,

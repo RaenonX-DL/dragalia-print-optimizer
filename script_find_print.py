@@ -33,8 +33,11 @@ prints_r5: dict[str, Wyrmprint] = {
         name="DDMG_18", type=PrintType.R5,
         effects=[Effect(effect_param=PrintParameter.DRAGON_DAMAGE, effect_rate=0.18)]
     ),
+    "BK_30": Wyrmprint(
+        name="BK_30", type=PrintType.R5,
+        effects=[Effect(effect_param=PrintParameter.PUNISHER_BK, effect_rate=0.3)]
+    ),
 }
-
 prints_r4: dict[str, Wyrmprint] = {
     "SD_20": Wyrmprint(
         name="SD_20", type=PrintType.R4,
@@ -57,6 +60,10 @@ prints_r4: dict[str, Wyrmprint] = {
     "DDMG_14": Wyrmprint(
         name="DDMG_14", type=PrintType.R4,
         effects=[Effect(effect_param=PrintParameter.DRAGON_DAMAGE, effect_rate=0.14)]
+    ),
+    "BK_25": Wyrmprint(
+        name="BK_25", type=PrintType.R4,
+        effects=[Effect(effect_param=PrintParameter.PUNISHER_BK, effect_rate=0.25)]
     ),
 }
 
@@ -156,24 +163,45 @@ params: CalcParams = CalcParams(
 )
 
 
-def check_all_count():
-    for r5_count, r4_count, sindom_count in product([1, 2, 3], [1, 2], [1, 2]):
-        print(f"--- R5 x {r5_count} / R4 x {r4_count} / Sindom x {sindom_count} ---")
+def check_by_count(counts: list[tuple[int, int, int, int]]):
+    for r5_count, r4_count, kld_count, sindom_count in counts:
+        print(f"--- R5 x {r5_count} / R4 x {r4_count} / KLD x {kld_count} / Sindom x {sindom_count} ---")
         r5_combinations = combinations(prints_r5.values(), r5_count)
         r4_combinations = combinations(prints_r4.values(), r4_count)
+        kaleido_combinations = combinations(prints_kaleido.values(), kld_count)
         sindom_combinations = combinations(prints_sindom.values(), sindom_count)
 
         comps = [
-            PrintComp(prints=r5_picked + r4_picked + sindom_picked)
-            for r5_picked, r4_picked, sindom_picked in product(r5_combinations, r4_combinations, sindom_combinations)
+            PrintComp(prints=r5_picked + r4_picked + kaleido_picked + sindom_picked, params=params)
+            for r5_picked, r4_picked, kaleido_picked, sindom_picked
+            in product(r5_combinations, r4_combinations, kaleido_combinations, sindom_combinations)
         ]
 
-        most_effective = max(
-            comps,
-            key=lambda comp: comp.get_prints_effectiveness(additional_base, damage_distribution)
-        )
-        most_effective.report_effectiveness(params)
+        most_effective_comp = None
+        for idx, comp in enumerate(comps):
+            current_comp = comp
+
+            if idx % 1000 == 0:
+                print(f"{idx} / {len(comps)}")
+
+            if not most_effective_comp or current_comp.effectiveness > most_effective_comp.effectiveness:
+                most_effective_comp = comp
+                continue
+
+        if not most_effective_comp:
+            print("Empty print comp")
+            continue
+
+        most_effective_comp.report_effectiveness()
         print()
+
+
+def check_all_count():
+    check_by_count([
+        (r5_count, r4_count, kld_count, sindom_count)
+        for r5_count, r4_count, kld_count, sindom_count
+        in product([1, 2, 3], [1, 2], [1], [1, 2])
+    ])
 
 
 def check_partial_count():
@@ -184,49 +212,43 @@ def check_partial_count():
         (3, 1, 1, 2),
     ]
 
-    for r5_count, r4_count, kld_count, sindom_count in counts:
-        print(f"--- R5 x {r5_count} / R4 x {r4_count} / KLD x {kld_count} / Sindom x {sindom_count} ---")
-        r5_combinations = combinations(prints_r5.values(), r5_count)
-        r4_combinations = combinations(prints_r4.values(), r4_count)
-        kaleido_combinations = combinations(prints_kaleido.values(), kld_count)
-        sindom_combinations = combinations(prints_sindom.values(), sindom_count)
-
-        comps = [
-            PrintComp(prints=r5_picked + r4_picked + kaleido_picked + sindom_picked)
-            for r5_picked, r4_picked, kaleido_picked, sindom_picked
-            in product(r5_combinations, r4_combinations, kaleido_combinations, sindom_combinations)
-        ]
-
-        most_effective = max(
-            comps,
-            key=lambda comp: comp.get_prints_effectiveness(params)
-        )
-        most_effective.report_effectiveness(params)
-        print()
+    check_by_count(counts)
 
 
 def check_full():
     r5_count = 3
     r4_count = 2
+    kld_count = 1
     sindom_count = 2
 
     r5_combinations = combinations(prints_r5.values(), r5_count)
     r4_combinations = combinations(prints_r4.values(), r4_count)
+    kaleido_combinations = combinations(prints_kaleido.values(), kld_count)
     sindom_combinations = combinations(prints_sindom.values(), sindom_count)
 
     comps = [
-        PrintComp(prints=r5_picked + r4_picked + sindom_picked)
-        for r5_picked, r4_picked, sindom_picked in product(r5_combinations, r4_combinations, sindom_combinations)
+        PrintComp(prints=r5_picked + r4_picked + kaleido_picked + sindom_picked, params=params)
+        for r5_picked, r4_picked, kaleido_picked, sindom_picked
+        in product(r5_combinations, r4_combinations, kaleido_combinations, sindom_combinations)
     ]
 
-    for comp in sorted(
+    for idx, comp in enumerate(comps):
+        if idx % 1000 == 0:
+            print(f"{idx} / {len(comps)}")
+
+        comp.load_effectiveness()
+
+    for idx, comp in enumerate(sorted(
             comps,
-            key=lambda comp: comp.get_prints_effectiveness(params),
+            key=lambda comp: comp.effectiveness,
             reverse=True
-    ):
-        comp.report_effectiveness(params)
+    )):
+        if idx > 50:
+            break
+
+        comp.report_effectiveness()
         print()
 
 
 if __name__ == '__main__':
-    check_partial_count()
+    check_full()
