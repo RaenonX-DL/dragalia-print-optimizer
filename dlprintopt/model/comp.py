@@ -74,7 +74,10 @@ class PrintComp:
 
     def report_effectiveness(self):
         wp_names = " / ".join(wp.name for wp in self.prints)
-        wp_effects = " / ".join(f"{param.name}: {rate}" for param, rate in self.print_effects.items())
+        wp_effects = " / ".join(
+            f"{param.name}: {rate}"
+            for param, rate in sorted(self.print_effects.items(), key=lambda item: item[0].name)
+        )
 
         print(
             f"Prints: {wp_names}\n"
