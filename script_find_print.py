@@ -150,6 +150,19 @@ prints_kaleido: dict[str, Wyrmprint] = {
             Effect(effect_param=PrintParameter.FS_DMG_PRINT, effect_rate=-0.5),
         ],
     ),
+    "KS_CRT": Wyrmprint(
+        name="CRT +15%", type=PrintType.KALEIDO,
+        effects=[
+            Effect(effect_param=PrintParameter.CRT_RATE, effect_rate=0.15),
+        ],
+    ),
+    "KS_CRT_CDMG": Wyrmprint(
+        name="CRT +15% / CDMG +15%", type=PrintType.KALEIDO,
+        effects=[
+            Effect(effect_param=PrintParameter.CRT_RATE, effect_rate=0.15),
+            Effect(effect_param=PrintParameter.CRT_DAMAGE, effect_rate=0.15),
+        ],
+    ),
     "KS_CDMG": Wyrmprint(
         name="CDMG +15%", type=PrintType.KALEIDO,
         effects=[
@@ -203,10 +216,10 @@ additional_base: dict[StatusParameter, float] = {
 
 damage_distribution: dict[DamageType, float] = {
     DamageType.NORMAL: 0,
-    DamageType.SKILL: 0.5 * 0.8,
-    DamageType.FS: 0.5 * 0.8,
-    DamageType.DRAGON: 0.7 * 0.2,
-    DamageType.DRAGON_SKILL: 0.3 * 0.2,
+    DamageType.SKILL: 0.4,
+    DamageType.FS: 0.4,
+    DamageType.DRAGON: 0.14,
+    DamageType.DRAGON_SKILL: 0.06,
 }
 
 damage_status_distribution: dict[DamageOnStatus, float] = {
